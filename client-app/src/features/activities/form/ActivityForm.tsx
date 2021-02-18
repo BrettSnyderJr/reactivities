@@ -4,17 +4,20 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import { Activity } from "../../../app/layout/models/activity";
+import Spinner from "react-bootstrap/Spinner";
 
 interface Props {
   activity: Activity | undefined;
   closeForm: () => void;
   createOrEdit: (activity: Activity) => void;
+  submitting: boolean;
 }
 
 const ActivityForm = ({
   activity: selectedActivity,
   closeForm,
   createOrEdit,
+  submitting,
 }: Props) => {
   console.log(selectedActivity);
   const initialState = selectedActivity ?? {
@@ -68,7 +71,7 @@ const ActivityForm = ({
           />
           <br />
           <Form.Control
-            type="text"
+            type="date"
             placeholder="Date"
             value={activity.date}
             name="date"
@@ -93,11 +96,21 @@ const ActivityForm = ({
           <br />
         </Form.Group>
         <ButtonGroup size="lg" className="w-100" aria-label="activity actions">
-          <Button variant="outline-danger" onClick={closeForm}>
+          <Button variant="outline-dark" onClick={closeForm}>
             Cancel
           </Button>
-          <Button variant="outline-success" type="submit">
-            Submit
+          <Button variant="outline-primary" type="submit" disabled={submitting}>
+            {submitting ? (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </ButtonGroup>
       </Form>

@@ -32,14 +32,14 @@ const ActivityDetails = ({
       <Card.Footer className="text-center bg-white">
         <ButtonGroup size="lg" className="w-100" aria-label="activity actions">
           <Button
-            variant="outline-warning"
+            variant="outline-primary"
             onClick={() => {
               openForm(activity.id);
             }}
           >
             Edit
           </Button>
-          <Button variant="outline-danger" onClick={cancelSelectActivity}>
+          <Button variant="outline-dark" onClick={cancelSelectActivity}>
             Cancel
           </Button>
         </ButtonGroup>

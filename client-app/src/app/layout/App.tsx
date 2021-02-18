@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Activity } from "./models/activity";
-import Container from "react-bootstrap/Container";
-import NavBar from "./NavBar";
-import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
-import { v4 as uuid } from "uuid";
+import React, { useState, useEffect } from 'react';
+import agent from '../api/agent';
+import { Activity } from './models/activity';
+import Container from 'react-bootstrap/Container';
+import NavBar from './NavBar';
+import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
+import { v4 as uuid } from 'uuid';
+import LoadingComponent from './LoadingComponent';
 
 const App = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [selectedActivity, setSelectedActivity] = useState<
-    Activity | undefined
-  >(undefined);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios
-      .get<Activity[]>("http://localhost:5000/api/activities")
-      .then((response) => {
-        setActivities(response.data);
+    agent.Activities.list().then((response) => {
+      let activities: Activity[] = [];
+
+      // Format the date to be accepted by the html date type on the form
+      response.forEach((activity) => {
+        activity.date = activity.date.split('T')[0];
       });
+
+      setActivities(response);
+      setLoading(false);
+    });
   }, []);
 
   const handleSelectActivity = (id: string) => {
-    console.log(id);
     setSelectedActivity(activities.find((x) => x.id === id));
   };
 
@@ -31,7 +37,6 @@ const App = () => {
   };
 
   const handleFormOpen = (id?: string) => {
-    console.log(id);
     id ? handleSelectActivity(id) : handleCancelSelectActivity();
     setEditMode(true);
   };
@@ -41,24 +46,43 @@ const App = () => {
   };
 
   const handleCreateOrEditActivity = (activity: Activity) => {
-    activity.id
-      ? setActivities([
-          ...activities.filter((x) => x.id !== activity.id),
-          activity,
-        ])
-      : setActivities([...activities, { ...activity, id: uuid() }]);
-    setEditMode(false);
-    setSelectedActivity(activity);
+    setSubmitting(true);
+
+    if (activity.id) {
+      agent.Activities.update(activity).then(() => {
+        setActivities([...activities.filter((x) => x.id !== activity.id), activity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      });
+    } else {
+      activity.id = uuid();
+      agent.Activities.create(activity).then(() => {
+        setActivities([...activities, activity]);
+      });
+      setSelectedActivity(activity);
+      setEditMode(false);
+      setSubmitting(false);
+    }
   };
 
   const handleDeleteActivity = (id: string) => {
-    setActivities(activities.filter((x) => x.id !== id));
+    setSubmitting(true);
+
+    agent.Activities.delete(id).then(() => {
+      setActivities([...activities.filter((x) => x.id !== id)]);
+      setSubmitting(false);
+    });
   };
+
+  if (loading) {
+    return <LoadingComponent />;
+  }
 
   return (
     <>
       <NavBar openForm={handleFormOpen} />
-      <Container style={{ marginTop: "7em" }}>
+      <Container style={{ marginTop: '7em' }}>
         <ActivityDashboard
           activities={activities}
           selectedActivity={selectedActivity}
@@ -69,6 +93,7 @@ const App = () => {
           closeForm={handleFormClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
+          submitting={submitting}
         />
       </Container>
     </>
