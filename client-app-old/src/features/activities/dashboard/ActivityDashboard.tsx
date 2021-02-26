@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ActivityList from './ActivityList';
@@ -6,19 +6,10 @@ import ActivityDetails from '../details/ActivityDetails';
 import ActivityForm from '../form/ActivityForm';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
 
 const ActivityDashboard = () => {
   const { activityStore } = useStore();
-  const { selectedActivity, editMode, loadActivities } = activityStore;
-
-  useEffect(() => {
-    loadActivities();
-  }, [activityStore]);
-
-  if (activityStore.loadingInitial) {
-    return <LoadingComponent />;
-  }
+  const { selectedActivity, editMode } = activityStore;
 
   return (
     <Row>
