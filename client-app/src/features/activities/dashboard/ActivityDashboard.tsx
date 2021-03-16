@@ -2,19 +2,20 @@ import React, { useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ActivityList from './ActivityList';
-import ActivityDetails from '../details/ActivityDetails';
-import ActivityForm from '../form/ActivityForm';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
+import ActivityFilters from './ActivityFilters';
 
 const ActivityDashboard = () => {
   const { activityStore } = useStore();
-  const { selectedActivity, editMode, loadActivities } = activityStore;
+  const { loadActivities, activityRegistry } = activityStore;
 
   useEffect(() => {
-    loadActivities();
-  }, [activityStore]);
+    if (activityRegistry.size <= 1) {
+      loadActivities();
+    }
+  }, [activityRegistry.size, loadActivities]);
 
   if (activityStore.loadingInitial) {
     return <LoadingComponent />;
@@ -22,12 +23,11 @@ const ActivityDashboard = () => {
 
   return (
     <Row>
-      <Col md={selectedActivity || editMode ? 6 : 12}>
+      <Col md={8}>
         <ActivityList />
       </Col>
-      <Col md={6}>
-        {selectedActivity && !editMode && <ActivityDetails />}
-        {editMode && <ActivityForm />}
+      <Col md={4}>
+        <ActivityFilters />
       </Col>
     </Row>
   );

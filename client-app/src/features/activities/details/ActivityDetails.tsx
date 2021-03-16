@@ -1,41 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { useStore } from '../../../app/stores/store';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { Link, useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { Col, Row } from 'react-bootstrap';
+import ActivityDetailHeader from './ActivityDetailHeader';
+import ActivityDetailInfo from './ActivityDetailInfo';
+import ActivityDetailChat from './ActivityDetailChat';
+import ActivityDetailSidebar from './ActivityDetailSidebar';
 
 const ActivityDetails = () => {
   const { activityStore } = useStore();
-  const { selectedActivity: activity, openForm, cancelSelectedActivity } = activityStore;
+  const { selectedActivity: activity, loadActivity, loadingInitial } = activityStore;
+  const { id } = useParams<{ id: string }>();
 
-  if (!activity) return <LoadingComponent />;
+  useEffect(() => {
+    if (id) {
+      loadActivity(id);
+    }
+  }, [id, loadActivity]);
+
+  if (loadingInitial || !activity) return <LoadingComponent />;
 
   return (
-    <Card className='mb-2'>
-      <Card.Img variant='top' src={`/assets/CategoryImages/placeholder.png`} alt='activity' />
-      <Card.Body>
-        <Card.Title>{activity.title}</Card.Title>
-        <Card.Subtitle className='mb-2 text-muted'>{activity.date}</Card.Subtitle>
-        <Card.Text></Card.Text>
-      </Card.Body>
-      <Card.Footer className='text-center bg-white'>
-        <ButtonGroup size='lg' className='w-100' aria-label='activity actions'>
-          <Button
-            variant='outline-primary'
-            onClick={() => {
-              openForm(activity.id);
-            }}
-          >
-            Edit
-          </Button>
-          <Button variant='outline-dark' onClick={cancelSelectedActivity}>
-            Cancel
-          </Button>
-        </ButtonGroup>
-      </Card.Footer>
-    </Card>
+    <Row>
+      <Col md={9}>
+        <ActivityDetailHeader activity={activity} />
+        <ActivityDetailInfo activity={activity} />
+        <ActivityDetailChat />
+      </Col>
+      <Col md={3}>
+        <ActivityDetailSidebar />
+      </Col>
+    </Row>
   );
 };
 
-export default ActivityDetails;
+export default observer(ActivityDetails);

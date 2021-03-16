@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -6,32 +6,59 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { Link, useHistory, useParams } from 'react-router-dom';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { v4 as uuid } from 'uuid';
 
 const ActivityForm = () => {
+  const history = useHistory();
   const { activityStore } = useStore();
-  const { selectedActivity, closeForm, createActivity, updateActivity, loading } = activityStore;
+  const { createActivity, updateActivity, loading, loadingInitial, loadActivity } = activityStore;
+  const { id } = useParams<{ id: string }>();
 
-  const initialState = selectedActivity ?? {
+  const [activity, setActivity] = useState({
     id: '',
     title: '',
-    category: '',
-    description: '',
     date: '',
+    description: '',
+    category: '',
     city: '',
     venue: '',
-  };
+  });
 
-  const [activity, setActivity] = useState(initialState);
+  useEffect(() => {
+    if (id) {
+      loadActivity(id).then((activity) => {
+        setActivity(activity!);
+      });
+    }
+  }, [id, loadActivity]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    activity.id ? updateActivity(activity) : createActivity(activity);
+    if (activity.id.length === 0) {
+      let newActivity = {
+        ...activity,
+        id: uuid(),
+      };
+      createActivity(newActivity).then(() => {
+        history.push(`/activities/${newActivity.id}`);
+      });
+    } else {
+      updateActivity(activity).then(() => {
+        history.push(`/activities/${activity.id}`);
+      });
+    }
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setActivity({ ...activity, [name]: value });
   };
+
+  if (loadingInitial) {
+    return <LoadingComponent />;
+  }
 
   return (
     <Card className='p-2'>
@@ -51,12 +78,7 @@ const ActivityForm = () => {
           <br />
         </Form.Group>
         <ButtonGroup size='lg' className='w-100' aria-label='activity actions'>
-          <Button
-            variant='outline-dark'
-            onClick={() => {
-              closeForm();
-            }}
-          >
+          <Button as={Link} to='/activities' variant='outline-dark'>
             Cancel
           </Button>
           <Button variant='outline-primary' type='submit' disabled={loading}>
