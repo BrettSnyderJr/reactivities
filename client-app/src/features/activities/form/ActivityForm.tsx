@@ -1,3 +1,5 @@
+// Using bootstrap forms
+
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { v4 as uuid } from 'uuid';
+import { Activity } from '../../../app/models/activity';
 
 const ActivityForm = () => {
   const history = useHistory();
@@ -16,10 +19,10 @@ const ActivityForm = () => {
   const { createActivity, updateActivity, loading, loadingInitial, loadActivity } = activityStore;
   const { id } = useParams<{ id: string }>();
 
-  const [activity, setActivity] = useState({
+  const [activity, setActivity] = useState<Activity>({
     id: '',
     title: '',
-    date: '',
+    date: null,
     description: '',
     category: '',
     city: '',
@@ -70,7 +73,7 @@ const ActivityForm = () => {
           <br />
           <Form.Control type='text' placeholder='Category' value={activity.category} name='category' onChange={handleInputChange} />
           <br />
-          <Form.Control type='date' placeholder='Date' value={activity.date} name='date' onChange={handleInputChange} />
+          <Form.Control type='date' placeholder='Date' value={activity.date?.toString()} name='date' onChange={handleInputChange} />
           <br />
           <Form.Control type='text' placeholder='City' value={activity.city} name='city' onChange={handleInputChange} />
           <br />

@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Persistence;
 
-namespace Application.Activities
+namespace Application.ActivityCategories
 {
     public class List
     {
-        public class Query : IRequest<Result<List<Activity>>>{}
+        public class Query : IRequest<Result<List<ActivityCategory>>>{}
 
-        public class Handler : IRequestHandler<Query, Result<List<Activity>>>
+        public class Handler : IRequestHandler<Query, Result<List<ActivityCategory>>>
         {
             public readonly DataContext _context;
             private readonly ILogger _logger;
@@ -25,10 +25,10 @@ namespace Application.Activities
                 _context = context;
             }
 
-            public async Task<Result<List<Activity>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<ActivityCategory>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                List<Activity> activities = await _context.Activities.ToListAsync(cancellationToken);
-                return Result<List<Activity>>.Success(activities);
+                List<ActivityCategory> activityCategories = await _context.ActivityCategories.ToListAsync(cancellationToken);
+                return Result<List<ActivityCategory>>.Success(activityCategories);
             }
         }
     }

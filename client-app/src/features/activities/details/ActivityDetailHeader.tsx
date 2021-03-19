@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Activity } from '../../../app/models/activity';
+import { format } from 'date-fns';
 
 interface Props {
   activity: Activity;
@@ -18,7 +19,7 @@ const ActivityDetailHeader = ({ activity }: Props) => {
       <Card.Img variant='top' src={`/assets/CategoryImages/${activity.category}.jpg`} style={activityImageStyle} />
       <Card.ImgOverlay className='text-white'>
         <Card.Title>{activity.title}</Card.Title>
-        <Card.Text>{activity.date}</Card.Text>
+        <Card.Text>{format(activity.date!, 'dd MMM yyyy')}</Card.Text>
         <Card.Text>
           Hosted by <strong>UserName</strong>
         </Card.Text>

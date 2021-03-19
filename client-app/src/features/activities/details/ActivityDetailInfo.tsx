@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { Activity } from '../../../app/models/activity';
+import { format } from 'date-fns';
 
 interface Props {
   activity: Activity;
@@ -14,7 +15,7 @@ const ActivityDetailInfo = ({ activity }: Props) => {
           <Col className='p-2'>{activity.description}</Col>
         </Row>
         <Row className='m-0 border-top'>
-          <Col className='p-2'>{activity.date}</Col>
+          <Col className='p-2'>{format(activity.date!, 'dd MMM yyyy h:mm aa')}</Col>
         </Row>
         <Row className='m-0 border-top'>
           <Col className='p-2'>

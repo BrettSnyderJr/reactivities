@@ -8,7 +8,7 @@ namespace Persistence
 {
     public class Seed
     {
-        public static async Task SeedData(DataContext context)
+        public static async Task SeedActivityData(DataContext context)
         {
             if (context.Activities.Any()) return;
             
@@ -107,6 +107,47 @@ namespace Persistence
             };
 
             await context.Activities.AddRangeAsync(activities);
+            await context.SaveChangesAsync();
+        }
+        public static async Task SeedActivityCategoryData(DataContext context)
+        {
+            if (context.ActivityCategories.Any()) return;
+            
+            var activityCategories = new List<ActivityCategory>
+            {
+                new ActivityCategory
+                {
+                    Text = "Drinks",
+                    Value = "drinks"
+                },
+                new ActivityCategory
+                {
+                    Text = "Culture",
+                    Value = "culture"
+                },
+                new ActivityCategory
+                {
+                    Text = "Film",
+                    Value = "film"
+                },
+                new ActivityCategory
+                {
+                    Text = "Food",
+                    Value = "food"
+                },
+                new ActivityCategory
+                {
+                    Text = "Music",
+                    Value = "music"
+                },
+                new ActivityCategory
+                {
+                    Text = "Travel",
+                    Value = "travel"
+                },
+            };
+
+            await context.ActivityCategories.AddRangeAsync(activityCategories);
             await context.SaveChangesAsync();
         }
     }
