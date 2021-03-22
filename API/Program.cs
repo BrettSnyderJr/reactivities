@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Domain;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,9 +24,12 @@ namespace API
             try
             {
                 DataContext context = services.GetRequiredService<DataContext>();
+                UserManager<AppUser> userManager = services.GetRequiredService<UserManager<AppUser>>();
+                
                 await context.Database.MigrateAsync();
                 await Seed.SeedActivityData(context);
                 await Seed.SeedActivityCategoryData(context);
+                await Seed.SeedIdentityUserData(context, userManager);
             }
             catch(Exception ex)
             {

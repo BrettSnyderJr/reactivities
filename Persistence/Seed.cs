@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
@@ -108,6 +109,37 @@ namespace Persistence
 
             await context.Activities.AddRangeAsync(activities);
             await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedIdentityUserData(DataContext context, UserManager<AppUser> userManager)
+        {
+            if (userManager.Users.Any()) return;
+            
+            var users = new List<AppUser>
+            {
+                new AppUser
+                {
+                    DisplayName = "Bob",
+                    UserName = "bob",
+                    Email = "bob@test.com"
+                },
+                new AppUser
+                {
+                    DisplayName = "Tom",
+                    UserName = "tom",
+                    Email = "tom@test.com"
+                },
+                new AppUser
+                {
+                    DisplayName = "Jane",
+                    UserName = "jane",
+                    Email = "jane@test.com"
+                },
+            };
+
+            foreach(var user in users){
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+            }
         }
         public static async Task SeedActivityCategoryData(DataContext context)
         {
